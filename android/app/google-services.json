@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "191725574697",
+    "project_id": "anngon45-4a5ae",
+    "storage_bucket": "anngon45-4a5ae.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:191725574697:android:d383ee41af1fab2dc6da38",
+        "android_client_info": {
+          "package_name": "com.example.app_an_ngon"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVT4G9Q6tpNki5M2-aQmRQcMMCefYg0Uc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
