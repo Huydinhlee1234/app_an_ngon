@@ -43,3 +43,6 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+# Bỏ qua các file backend Node.js và khóa bảo mật Firebase
+firebase_seeder/node_modules/
+firebase_seeder/serviceAccountKey.json
