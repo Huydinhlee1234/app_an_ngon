@@ -14,8 +14,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _emailController = TextEditingController(text: 'demo@foodie.vn');
-  final _passwordController = TextEditingController(text: 'password123');
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   bool _showPass = false;
   String _error = '';
 
@@ -133,6 +133,8 @@ class _LoginPageState extends State<LoginPage> {
                   TextField(
                     controller: _emailController,
                     decoration: InputDecoration(
+                      hintText: 'demo@foodie.vn', // Thêm dòng này để tạo chữ mờ
+                      hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
                       prefixIcon: const Icon(Icons.mail_outline, color: AppColors.textSecondary, size: 20),
                       filled: true,
                       fillColor: AppColors.inputBackground,
@@ -149,6 +151,8 @@ class _LoginPageState extends State<LoginPage> {
                     controller: _passwordController,
                     obscureText: !_showPass,
                     decoration: InputDecoration(
+                      hintText: 'password123', // Thêm dòng này để tạo chữ mờ
+                      hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
                       prefixIcon: const Icon(Icons.lock_outline, color: AppColors.textSecondary, size: 20),
                       suffixIcon: IconButton(
                         icon: Icon(_showPass ? Icons.visibility_off : Icons.visibility, color: AppColors.textSecondary, size: 20),

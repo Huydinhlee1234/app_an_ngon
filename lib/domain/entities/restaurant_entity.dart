@@ -9,7 +9,8 @@ class RestaurantEntity {
   final String address;
   final String hours;
   final bool isOpen;
-  final String imageUrl;
+  // SỬA: Đổi imageUrl thành image cho khớp với Firebase
+  final String image;
   final List<String> images; // Danh sách ảnh cho màn hình chi tiết
   final String description;
 
@@ -24,7 +25,8 @@ class RestaurantEntity {
     required this.address,
     required this.hours,
     required this.isOpen,
-    required this.imageUrl,
+    // SỬA: Đổi imageUrl thành image
+    required this.image,
     required this.images,
     required this.description,
   });

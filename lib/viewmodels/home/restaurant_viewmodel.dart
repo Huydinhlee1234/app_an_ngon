@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../domain/entities/category_entity.dart';
 import '../../domain/entities/restaurant_entity.dart';
 import '../../interfaces/repositories/irestaurant_repository.dart';
 
@@ -6,24 +7,32 @@ class RestaurantViewModel extends ChangeNotifier {
   final IRestaurantRepository _repository;
 
   List<RestaurantEntity> restaurants = [];
+  List<CategoryEntity> categories = [];
+
   bool isLoading = false;
   String? errorMessage;
 
-  // Constructor yêu cầu phải tiêm Repository vào
   RestaurantViewModel(this._repository);
 
-  Future<void> fetchRestaurants() async {
+  Future<void> loadInitialData() async {
     isLoading = true;
     errorMessage = null;
-    notifyListeners(); // Báo UI: Đang tải dữ liệu!
+    notifyListeners();
 
     try {
-      restaurants = await _repository.getHighRatingRestaurants();
+      // Chạy 2 luồng tải dữ liệu song song để tiết kiệm thời gian
+      final results = await Future.wait([
+        _repository.getCategories(),
+        _repository.getHighRatingRestaurants(),
+      ]);
+
+      categories = results[0] as List<CategoryEntity>;
+      restaurants = results[1] as List<RestaurantEntity>;
     } catch (e) {
-      errorMessage = e.toString();
+      errorMessage = 'Lỗi kết nối máy chủ: ${e.toString()}';
     } finally {
       isLoading = false;
-      notifyListeners(); // Báo UI: Tải xong rồi (hoặc lỗi), vẽ lại màn hình đi!
+      notifyListeners();
     }
   }
 }

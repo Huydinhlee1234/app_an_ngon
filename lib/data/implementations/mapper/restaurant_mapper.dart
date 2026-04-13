@@ -1,22 +1,29 @@
-import '../../dtos/restaurant/restaurant_dto.dart';
 import '../../../domain/entities/restaurant_entity.dart';
+import '../../dtos/restaurant/restaurant_dto.dart';
 
 class RestaurantMapper {
-  static RestaurantEntity toEntity(String documentId, RestaurantDto dto) {
+  // Lấy DTO (có thể null) và biến thành Entity (chuẩn 100%)
+  static RestaurantEntity toEntity(RestaurantDto dto) {
     return RestaurantEntity(
-      id: documentId, // ID lấy từ Document ID của Firebase
-      name: dto.name ?? 'Chưa có tên',
+      id: dto.id,
+      name: dto.name ?? 'Nhà hàng ẩn danh',
       cuisine: dto.cuisine ?? 'Đang cập nhật',
-      rating: (dto.rating ?? 0.0).toDouble(),
-      reviewCount: dto.reviewCount ?? 0,
-      priceRange: dto.priceRange ?? 1,
-      distance: (dto.distance ?? 0.0).toDouble(),
-      address: dto.address ?? 'Chưa có địa chỉ',
-      hours: dto.hours ?? 'Chưa rõ',
-      isOpen: dto.isOpen ?? false,
-      imageUrl: dto.image ?? '',
+
+      // Xử lý ép kiểu ở đây
+      rating: dto.rating?.toDouble() ?? 0.0,
+      reviewCount: dto.reviewCount?.toInt() ?? 0,
+      priceRange: dto.priceRange?.toInt() ?? 1,
+      distance: dto.distance?.toDouble() ?? 0.0,
+
+      address: dto.address ?? 'Đang cập nhật địa chỉ',
+      hours: dto.hours ?? 'Đang cập nhật',
+      isOpen: dto.isOpen ?? true,
+      image: dto.image ?? 'https://via.placeholder.com/150',
+
+      // Chuyển List<dynamic> thành List<String> an toàn
       images: dto.images?.map((e) => e.toString()).toList() ?? [],
-      description: dto.description ?? 'Chưa có mô tả',
+
+      description: dto.description ?? 'Chưa có mô tả chi tiết.',
     );
   }
 }

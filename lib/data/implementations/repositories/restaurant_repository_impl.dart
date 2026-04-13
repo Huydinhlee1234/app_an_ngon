@@ -1,24 +1,46 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../../domain/entities/category_entity.dart';
 import '../../../domain/entities/restaurant_entity.dart';
 import '../../../interfaces/repositories/irestaurant_repository.dart';
+import '../../dtos/category/category_dto.dart';
 import '../../dtos/restaurant/restaurant_dto.dart';
+import '../mapper/category_mapper.dart';
 import '../mapper/restaurant_mapper.dart';
-import '../../../core/constants/app_constants.dart';
 
 class RestaurantRepositoryImpl implements IRestaurantRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
-  Future<List<RestaurantEntity>> getHighRatingRestaurants() async {
-    final snapshot = await _firestore
-        .collection(AppConstants.restaurantsCollection) // Thay chuỗi 'restaurants' bằng hằng số
-        .where('rating', isGreaterThanOrEqualTo: 4.0)
-        .orderBy('rating', descending: true)
-        .get();
+  Future<List<CategoryEntity>> getCategories() async {
+    try {
+      final snapshot = await _firestore.collection('categories').get();
 
-    return snapshot.docs.map((doc) {
-      final dto = RestaurantDto.fromJson(doc.data());
-      return RestaurantMapper.toEntity(doc.id, dto);
-    }).toList();
+      // Chuyển Firebase Doc -> DTO -> Entity
+      return snapshot.docs.map((doc) {
+        final dto = CategoryDto.fromFirestore(doc);
+        return CategoryMapper.toEntity(dto);
+      }).toList();
+
+    } catch (e) {
+      throw Exception('Lỗi khi tải danh mục: $e');
+    }
+  }
+
+  @override
+  Future<List<RestaurantEntity>> getHighRatingRestaurants() async {
+    try {
+      final snapshot = await _firestore.collection('restaurants').orderBy('rating', descending: true).get();
+
+      return snapshot.docs.map((doc) {
+        // Bước 1: Firebase -> DTO
+        final dto = RestaurantDto.fromFirestore(doc);
+
+        // Bước 2: DTO -> Entity
+        return RestaurantMapper.toEntity(dto);
+      }).toList();
+
+    } catch (e) {
+      throw Exception('Lỗi khi tải danh sách nhà hàng: $e');
+    }
   }
 }
