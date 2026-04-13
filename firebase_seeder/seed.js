@@ -316,8 +316,8 @@ const users = [
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo'
   },
   {
-    uid: 'u2',
-    email: 'kietleedinh@gmail.com',
+    uid: 'u3',
+    email: 'huyleedinh@gmail.com',
     password: '123456',
     displayName: 'Lê Đình Huy',
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Huy'
