@@ -19,6 +19,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _showPass = false;
   String _error = '';
 
+  // Hàm đăng nhập Email/Password
   void _handleLogin() async {
     if (_emailController.text.isEmpty || _passwordController.text.isEmpty) return;
 
@@ -32,6 +33,20 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  // Hàm đăng nhập Google
+  void _handleGoogleLogin() async {
+    final authVM = Provider.of<AuthViewModel>(context, listen: false);
+    final success = await authVM.loginGoogle();
+
+    if (success && mounted) {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const MainLayout()));
+    } else {
+      if (authVM.errorMessage != null) {
+        setState(() => _error = authVM.errorMessage!);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final authVM = Provider.of<AuthViewModel>(context);
@@ -41,7 +56,7 @@ class _LoginPageState extends State<LoginPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // Header Gradient
+            // --- HEADER GRADIENT ---
             Container(
               width: double.infinity,
               padding: const EdgeInsets.only(top: 80, bottom: 50, left: 24, right: 24),
@@ -61,18 +76,30 @@ class _LoginPageState extends State<LoginPage> {
                     child: const Icon(Icons.restaurant, color: AppColors.primary, size: 30),
                   ),
                   const SizedBox(width: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(AppConstants.appName, style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold)),
-                      Text(AppConstants.appSlogan, style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 13)),
-                    ],
+
+                  // BỌC EXPANDED ĐỂ CHỐNG TRÀN CHỮ THEO CHIỀU NGANG
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                            AppConstants.appName,
+                            style: TextStyle(color: Colors.white, fontSize: 26, fontWeight: FontWeight.bold)
+                        ),
+                        Text(
+                          AppConstants.appSlogan,
+                          style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 13),
+                          maxLines: 1, // Ép chỉ hiển thị 1 dòng
+                          overflow: TextOverflow.ellipsis, // Nếu dài quá sẽ hiện dấu ...
+                        ),
+                      ],
+                    ),
                   )
                 ],
               ),
             ),
 
-            // Form Content
+            // --- FORM CONTENT ---
             Padding(
               padding: const EdgeInsets.all(24.0),
               child: Column(
@@ -142,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
 
-                  // Login Button
+                  // Nút Đăng nhập thường
                   SizedBox(
                     width: double.infinity,
                     height: 52,
@@ -160,6 +187,56 @@ class _LoginPageState extends State<LoginPage> {
                   ),
 
                   const SizedBox(height: 24),
+
+                  // Divider "hoặc"
+                  Row(
+                    children: [
+                      Expanded(child: Divider(color: Colors.grey.shade300)),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Text('hoặc', style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                      ),
+                      Expanded(child: Divider(color: Colors.grey.shade300)),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // --- NÚT ĐĂNG NHẬP GOOGLE ---
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        side: BorderSide(color: AppColors.gradientStart.withValues(alpha: 0.3), width: 1.5),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        backgroundColor: Colors.white,
+                      ),
+                      onPressed: authVM.isLoading ? null : _handleGoogleLogin,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Image.asset(
+                            'assets/images/google.png',
+                            height: 24,
+                            width: 24,
+                          ),
+                          const SizedBox(width: 12),
+                          const Text(
+                            'Đăng nhập với Google',
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 32),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

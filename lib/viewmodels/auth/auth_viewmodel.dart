@@ -52,6 +52,23 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
+  Future<bool> loginGoogle() async {
+    isLoading = true;
+    errorMessage = null;
+    notifyListeners();
+
+    try {
+      currentUser = await _authRepository.loginWithGoogle();
+      return currentUser != null;
+    } catch (e) {
+      errorMessage = 'Không thể kết nối với tài khoản Google.';
+      return false;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
   Future<void> logout() async {
     await _authRepository.logout();
     currentUser = null;
