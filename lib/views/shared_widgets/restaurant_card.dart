@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/restaurant_entity.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/utils/formatters.dart';
 
 class RestaurantCard extends StatelessWidget {
   final RestaurantEntity restaurant;
@@ -15,21 +17,17 @@ class RestaurantCard extends StatelessWidget {
     required this.isSaved,
   }) : super(key: key);
 
-  // Hàm tạo chuỗi ký tự tiền tệ (giống priceLabel trong React)
-  String _priceLabel(int range) => '₫' * range;
-
   @override
   Widget build(BuildContext context) {
-    // GestureDetector tương đương với onClick trong React
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16), // rounded-2xl
+          color: AppColors.background,
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.lightBlueAccent.withOpacity(0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               blurRadius: 12,
               offset: const Offset(0, 2),
             ),
@@ -38,20 +36,17 @@ class RestaurantCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Phần Hình ảnh (tương đương relative h-36)
             Stack(
               children: [
                 ClipRRect(
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                   child: Image.network(
                     restaurant.imageUrl,
-                    height: 144, // ~ h-36
+                    height: 144,
                     width: double.infinity,
                     fit: BoxFit.cover,
-                    // Trong thực tế nên dùng CachedNetworkImage
                   ),
                 ),
-                // Nút Bookmark góc phải
                 Positioned(
                   top: 8,
                   right: 8,
@@ -62,7 +57,7 @@ class RestaurantCard extends StatelessWidget {
                       radius: 16,
                       child: Icon(
                         isSaved ? Icons.bookmark : Icons.bookmark_border,
-                        color: isSaved ? Colors.lightBlue : Colors.grey,
+                        color: isSaved ? AppColors.primary : AppColors.textSecondary,
                         size: 18,
                       ),
                     ),
@@ -70,8 +65,6 @@ class RestaurantCard extends StatelessWidget {
                 ),
               ],
             ),
-
-            // Phần Thông tin (tương đương div p-3)
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: Column(
@@ -79,29 +72,23 @@ class RestaurantCard extends StatelessWidget {
                 children: [
                   Text(
                     restaurant.name,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis, // truncate
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 6),
                   Row(
                     children: [
                       const Icon(Icons.star, color: Colors.amber, size: 14),
                       const SizedBox(width: 4),
-                      Text(
-                        '${restaurant.rating}',
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
-                      ),
+                      Text('${restaurant.rating}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
                     ],
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    '${restaurant.address} · ${_priceLabel(2)}', // Tạm fix priceRange 2
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    // Sử dụng Formatters từ thư mục core
+                    '${Formatters.formatDistance(restaurant.distance)} · ${Formatters.priceRangeToSymbol(restaurant.priceRange)}',
+                    style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
                   ),
                 ],
               ),

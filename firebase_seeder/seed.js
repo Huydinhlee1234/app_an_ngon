@@ -306,6 +306,55 @@ const offlineAreas = [
   { id: 'oa4', name: 'Hội An', nameEn: 'Hoi An', size: '5 MB', restaurants: 234, downloaded: true, progress: 100 },
 ];
 
+// THÊM MỚI: Danh sách người dùng cần tạo
+const users = [
+  {
+    uid: 'u1',
+    email: 'demo@foodie.vn',
+    password: 'password123', // Mật khẩu thật để bạn test đăng nhập
+    displayName: 'Người Dùng Demo',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=demo'
+  },
+  {
+    uid: 'u2',
+    email: 'kietleedinh@gmail.com',
+    password: '123456',
+    displayName: 'Lê Đình Huy',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Huy'
+  }
+];
+
+// Hàm tạo User Authentication và Firestore Profile
+async function seedUsers() {
+  console.log('Đang tạo tài khoản người dùng...');
+  for (const u of users) {
+    try {
+      // 1. Tạo tài khoản đăng nhập (Auth)
+      await admin.auth().createUser({
+        uid: u.uid,
+        email: u.email,
+        password: u.password,
+        displayName: u.displayName,
+      });
+
+      // 2. Lưu thông tin hồ sơ vào bảng 'users' (Firestore)
+      await db.collection('users').doc(u.uid).set({
+        email: u.email,
+        displayName: u.displayName,
+        avatar: u.avatar,
+        role: 'user',
+        createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+      console.log(`✅ Đã tạo tài khoản: ${u.email}`);
+    } catch (error) {
+      if (error.code === 'auth/uid-already-exists' || error.code === 'auth/email-already-exists') {
+        console.log(`⏩ Bỏ qua ${u.email} (Đã tồn tại)`);
+      } else {
+        console.error(`❌ Lỗi tạo user ${u.email}:`, error);
+      }
+    }
+  }
+}
 // 3. Hàm đẩy dữ liệu tự động (Dùng Async/Await)
 async function seedData(collectionName, dataArray) {
   console.log(`Đang đẩy dữ liệu lên collection: ${collectionName}...`);
@@ -321,6 +370,7 @@ async function seedData(collectionName, dataArray) {
 // 4. Kích hoạt chạy tất cả các bảng dữ liệu
 async function runSeeder() {
   try {
+    await seedUsers();
     await seedData('categories', categories);
     await seedData('restaurants', restaurants);
     await seedData('reviews', reviews);

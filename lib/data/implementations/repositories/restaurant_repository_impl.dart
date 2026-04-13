@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../domain/entities/restaurant_entity.dart';
-import '../../../interfaces/repositories/IRestaurantRepository.dart';
+import '../../../interfaces/repositories/irestaurant_repository.dart';
 import '../../dtos/restaurant/restaurant_dto.dart';
 import '../mapper/restaurant_mapper.dart';
+import '../../../core/constants/app_constants.dart';
 
 class RestaurantRepositoryImpl implements IRestaurantRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -10,15 +11,13 @@ class RestaurantRepositoryImpl implements IRestaurantRepository {
   @override
   Future<List<RestaurantEntity>> getHighRatingRestaurants() async {
     final snapshot = await _firestore
-        .collection('restaurants')
+        .collection(AppConstants.restaurantsCollection) // Thay chuỗi 'restaurants' bằng hằng số
         .where('rating', isGreaterThanOrEqualTo: 4.0)
         .orderBy('rating', descending: true)
         .get();
 
     return snapshot.docs.map((doc) {
-      // 1. Chuyển JSON thành DTO
       final dto = RestaurantDto.fromJson(doc.data());
-      // 2. Chuyển DTO thành Entity bằng Mapper
       return RestaurantMapper.toEntity(doc.id, dto);
     }).toList();
   }

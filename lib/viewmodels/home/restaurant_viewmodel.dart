@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/restaurant_entity.dart';
-import '../../interfaces/repositories/IRestaurantRepository.dart';
+import '../../interfaces/repositories/irestaurant_repository.dart';
 
 class RestaurantViewModel extends ChangeNotifier {
   final IRestaurantRepository _repository;

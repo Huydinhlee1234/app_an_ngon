@@ -2,18 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 
-import 'di.dart'; // File Dependency Injection của bạn
+import 'di.dart';
+import 'viewmodels/auth/auth_viewmodel.dart';
 import 'viewmodels/home/restaurant_viewmodel.dart';
+import 'views/auth/login_page.dart';
 import 'views/home/main_layout.dart';
 
 void main() async {
-  // 1. Đảm bảo Flutter đã khởi tạo trước khi gọi Firebase
   WidgetsFlutterBinding.ensureInitialized();
-
-  // 2. Khởi tạo Firebase
   await Firebase.initializeApp();
-
-  // 3. Khởi tạo các Repositories và ViewModels (DI)
   setupDependencies();
 
   runApp(const MyApp());
@@ -26,10 +23,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // Cung cấp ViewModel cho toàn bộ app và gọi hàm fetch dữ liệu ngay lập tức
-        ChangeNotifierProvider(
-          create: (_) => getIt<RestaurantViewModel>()..fetchRestaurants(),
-        ),
+        ChangeNotifierProvider(create: (_) => getIt<AuthViewModel>()),
+        ChangeNotifierProvider(create: (_) => getIt<RestaurantViewModel>()),
       ],
       child: MaterialApp(
         title: 'Ăn Ngon 4-5',
@@ -38,7 +33,17 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.lightBlue,
           scaffoldBackgroundColor: Colors.grey[50],
         ),
-        home: const MainLayout(),
+        // Sử dụng Consumer để lắng nghe trạng thái đăng nhập
+        home: Consumer<AuthViewModel>(
+          builder: (context, authVM, child) {
+            // Nếu đã lấy được user từ Firebase -> vào MainLayout
+            if (authVM.currentUser != null) {
+              return const MainLayout();
+            }
+            // Nếu chưa -> vào LoginPage
+            return const LoginPage();
+          },
+        ),
       ),
     );
   }
