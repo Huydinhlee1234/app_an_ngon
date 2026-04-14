@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import '../search/search_page.dart';
 import 'home_page.dart';
 import '../profile/profile_page.dart';
 
@@ -17,7 +18,7 @@ class _MainLayoutState extends State<MainLayout> {
   // Danh sách 5 màn hình tương ứng với 5 tab
   final List<Widget> _pages = [
     const HomePage(),                                                 // Tab 0
-    const Center(child: Text('Màn hình Tìm kiếm (Đang phát triển)')), // Tab 1
+    const SearchPage(),                                               // Tab 1
     const Center(child: Text('Màn hình Bản đồ (Đang phát triển)')),   // Tab 2
     const Center(child: Text('Màn hình Đã lưu (Đang phát triển)')),   // Tab 3
     const ProfilePage(),                                              // Tab 4

@@ -1,22 +1,24 @@
 class RestaurantEntity {
   final String id;
   final String name;
-  final String cuisine; // Thể loại (ví dụ: Phở, Cà phê)
+  final String category; // MỚI: Mã danh mục (pho, banhmi...) để dùng cho Filter
+  final String cuisine;
   final double rating;
   final int reviewCount;
-  final int priceRange; // Mức giá (1-4, tương ứng số lượng ký hiệu ₫)
-  final double distance; // Khoảng cách (km)
+  final int priceRange;
+  final double distance;
   final String address;
   final String hours;
   final bool isOpen;
-  // SỬA: Đổi imageUrl thành image cho khớp với Firebase
   final String image;
-  final List<String> images; // Danh sách ảnh cho màn hình chi tiết
+  final List<String> images;
+  final List<String> tags; // MỚI: Mảng từ khóa để công cụ Tìm kiếm quét qua
   final String description;
 
   RestaurantEntity({
     required this.id,
     required this.name,
+    required this.category,
     required this.cuisine,
     required this.rating,
     required this.reviewCount,
@@ -25,9 +27,9 @@ class RestaurantEntity {
     required this.address,
     required this.hours,
     required this.isOpen,
-    // SỬA: Đổi imageUrl thành image
     required this.image,
     required this.images,
+    required this.tags,
     required this.description,
   });
 }

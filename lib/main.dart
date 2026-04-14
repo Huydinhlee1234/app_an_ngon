@@ -1,7 +1,9 @@
+import 'package:app_an_ngon/viewmodels/search/search_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 
+import 'core/theme/app_colors.dart';
 import 'di.dart';
 import 'viewmodels/auth/auth_viewmodel.dart';
 import 'viewmodels/home/restaurant_viewmodel.dart';
@@ -25,13 +27,15 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => getIt<AuthViewModel>()),
         ChangeNotifierProvider(create: (_) => getIt<RestaurantViewModel>()),
+        ChangeNotifierProvider(create: (_) => getIt<SearchViewModel>()),
       ],
       child: MaterialApp(
         title: 'Ăn Ngon 4-5',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.lightBlue,
-          scaffoldBackgroundColor: Colors.grey[50],
+          scaffoldBackgroundColor: AppColors.background,
+          fontFamily: 'Inter',
         ),
         // Sử dụng Consumer để lắng nghe trạng thái đăng nhập
         home: Consumer<AuthViewModel>(
