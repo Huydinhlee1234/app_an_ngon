@@ -7,10 +7,13 @@ class FilterEntity {
 
   FilterEntity({
     this.categories = const [],
-    this.maxDistance = 50.0, // Mặc định tìm trong 50km
-    this.priceRange = const [1, 4], // Mức giá từ $ đến $$$$
+
+    // 🔴 LỖI Ở ĐÂY: Đổi 50.0 thành 10.0 (hoặc 20.0) để không vượt quá giới hạn của Slider
+    this.maxDistance = 10.0,
+
+    this.priceRange = const [1, 4],
     this.minRating = 0.0,
-    this.sortBy = 'rating', // 'rating', 'distance', 'popular'
+    this.sortBy = 'rating',
   });
 
   bool get hasActiveFilters =>

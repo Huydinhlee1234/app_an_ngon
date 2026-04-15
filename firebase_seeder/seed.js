@@ -306,6 +306,29 @@ const offlineAreas = [
   { id: 'oa4', name: 'Hội An', nameEn: 'Hoi An', size: '5 MB', restaurants: 234, downloaded: true, progress: 100 },
 ];
 
+const configs = [
+  {
+    id: 'filterSettings',
+    sortOptions: [
+      { value: 'rating', label: 'Đánh giá cao nhất', labelEn: 'Highest Rating' },
+      { value: 'distance', label: 'Gần nhất', labelEn: 'Nearest' },
+      { value: 'popular', label: 'Phổ biến nhất', labelEn: 'Most Popular' },
+      { value: 'newest', label: 'Mới nhất', labelEn: 'Newest' },
+    ],
+    distanceSettings: {
+      min: 0.5,
+      max: 20.0,
+      defaultMax: 10.0,
+      step: 0.5
+    },
+    priceSettings: {
+      min: 1,
+      max: 4
+    },
+    ratingOptions: [0.0, 3.0, 3.5, 4.0, 4.5]
+  }
+];
+
 // THÊM MỚI: Danh sách người dùng cần tạo
 const users = [
   {
@@ -373,6 +396,7 @@ async function runSeeder() {
     await seedUsers();
     await seedData('categories', categories);
     await seedData('restaurants', restaurants);
+    await seedData('configs', configs);
     await seedData('reviews', reviews);
     await seedData('notifications', notifications);
     await seedData('offlineAreas', offlineAreas);

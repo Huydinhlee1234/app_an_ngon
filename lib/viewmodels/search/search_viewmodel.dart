@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/filter_entity.dart';
 import '../../domain/entities/restaurant_entity.dart';
+import '../../domain/entities/category_entity.dart'; // MỚI: Thêm Category Entity
 import '../../interfaces/repositories/irestaurant_repository.dart';
 import '../../interfaces/repositories/isearch_repository.dart';
 
@@ -16,6 +17,9 @@ class SearchViewModel extends ChangeNotifier {
   List<RestaurantEntity> searchResults = [];
   List<String> recentSearches = [];
 
+  // MỚI: Danh sách danh mục tải từ Firebase
+  List<CategoryEntity> categories = [];
+
   final List<String> trendingSuggestions = [
     'Phở bò', 'Bún chả', 'Cơm tấm', 'Lẩu hải sản', 'Bánh xèo', 'Gỏi cuốn'
   ];
@@ -28,7 +32,8 @@ class SearchViewModel extends ChangeNotifier {
   Future<void> _loadInitialData() async {
     recentSearches = await _searchRepo.getRecentSearches();
     try {
-      // Lấy toàn bộ data để tìm kiếm offline cho mượt
+      // MỚI: Tải cả danh mục và quán ăn từ Firebase
+      categories = await _restaurantRepo.getCategories();
       _allRestaurants = await _restaurantRepo.getHighRatingRestaurants();
       searchResults = List.from(_allRestaurants);
     } catch (e) {
@@ -61,7 +66,6 @@ class SearchViewModel extends ChangeNotifier {
     _applyFiltersAndSearch();
   }
 
-  // Thuật toán lọc chuẩn khớp 100% với file React của bạn
   void _applyFiltersAndSearch() {
     if (_query.trim().isEmpty && !activeFilter.hasActiveFilters) {
       searchResults = List.from(_allRestaurants);
@@ -72,14 +76,13 @@ class SearchViewModel extends ChangeNotifier {
     final q = _query.toLowerCase();
 
     searchResults = _allRestaurants.where((r) {
-      // 1. Quét từ khóa: Tên, Thể loại, Địa chỉ, và Mảng Tags
       final matchQuery = r.name.toLowerCase().contains(q) ||
           r.cuisine.toLowerCase().contains(q) ||
           r.address.toLowerCase().contains(q) ||
           r.tags.any((tag) => tag.toLowerCase().contains(q));
       if (!matchQuery) return false;
 
-      // 2. Lọc theo Filter Menu
+      // Logic lọc theo danh mục, khoảng cách, giá trị vẫn dùng 1-4 như cũ
       if (activeFilter.categories.isNotEmpty && !activeFilter.categories.contains(r.category)) return false;
       if (r.distance > activeFilter.maxDistance) return false;
       if (r.priceRange < activeFilter.priceRange[0] || r.priceRange > activeFilter.priceRange[1]) return false;
@@ -88,7 +91,6 @@ class SearchViewModel extends ChangeNotifier {
       return true;
     }).toList();
 
-    // 3. Sắp xếp
     searchResults.sort((a, b) {
       if (activeFilter.sortBy == 'rating') return b.rating.compareTo(a.rating);
       if (activeFilter.sortBy == 'distance') return a.distance.compareTo(b.distance);

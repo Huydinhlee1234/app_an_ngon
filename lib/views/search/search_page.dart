@@ -5,6 +5,7 @@ import '../../domain/entities/restaurant_entity.dart';
 import '../../viewmodels/search/search_viewmodel.dart';
 import '../shared_widgets/restaurant_card.dart';
 import '../home/restaurant_detail_page.dart';
+import 'filter_bottom_sheet.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -51,6 +52,73 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
+  // Widget _buildHeader(BuildContext context) {
+  //   final viewModel = Provider.of<SearchViewModel>(context, listen: false);
+  //   return Container(
+  //     padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
+  //     decoration: const BoxDecoration(
+  //       color: Colors.white,
+  //       border: Border(bottom: BorderSide(color: Color(0xFFF0F9FF), width: 1)),
+  //     ),
+  //     child: Row(
+  //       children: [
+  //         // GestureDetector(
+  //         //   onTap: () => Navigator.pop(context),
+  //         //   child: Container(
+  //         //     width: 36, height: 36,
+  //         //     decoration: BoxDecoration(color: const Color(0xFFF0F9FF), borderRadius: BorderRadius.circular(18)),
+  //         //     child: const Icon(Icons.arrow_back_ios_new, size: 18, color: AppColors.primary),
+  //         //   ),
+  //         // ),
+  //         // const SizedBox(width: 12),
+  //         Expanded(
+  //           child: TextField(
+  //             controller: _textController,
+  //             autofocus: true,
+  //             textInputAction: TextInputAction.search,
+  //             onChanged: (val) => viewModel.setQuery(val),
+  //             onSubmitted: (val) => viewModel.submitSearch(val),
+  //             decoration: InputDecoration(
+  //               hintText: 'Tìm quán ăn, món...',
+  //               hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+  //               prefixIcon: const Icon(Icons.search, size: 20, color: Colors.grey),
+  //               suffixIcon: Consumer<SearchViewModel>(
+  //                 builder: (context, vm, _) => vm.query.isNotEmpty
+  //                     ? IconButton(
+  //                   icon: const Icon(Icons.close, size: 18, color: Colors.grey),
+  //                   onPressed: () {
+  //                     _textController.clear();
+  //                     viewModel.setQuery('');
+  //                   },
+  //                 )
+  //                     : const SizedBox.shrink(),
+  //               ),
+  //               filled: true,
+  //               fillColor: const Color(0xFFF0F9FF),
+  //               contentPadding: const EdgeInsets.symmetric(vertical: 0),
+  //               border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
+  //             ),
+  //           ),
+  //         ),
+  //         const SizedBox(width: 12),
+  //         Consumer<SearchViewModel>(
+  //             builder: (context, vm, _) {
+  //               final hasFilters = vm.activeFilter.hasActiveFilters;
+  //               return Container(
+  //                 width: 36, height: 36,
+  //                 decoration: BoxDecoration(
+  //                   color: hasFilters ? AppColors.primary : const Color(0xFFF0F9FF),
+  //                   shape: BoxShape.circle,
+  //                 ),
+  //                 child: Icon(Icons.tune, size: 18, color: hasFilters ? Colors.white : AppColors.primary),
+  //               );
+  //             }
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
   Widget _buildHeader(BuildContext context) {
     final viewModel = Provider.of<SearchViewModel>(context, listen: false);
     return Container(
@@ -61,19 +129,23 @@ class _SearchPageState extends State<SearchPage> {
       ),
       child: Row(
         children: [
-          // GestureDetector(
-          //   onTap: () => Navigator.pop(context),
-          //   child: Container(
-          //     width: 36, height: 36,
-          //     decoration: BoxDecoration(color: const Color(0xFFF0F9FF), borderRadius: BorderRadius.circular(18)),
-          //     child: const Icon(Icons.arrow_back_ios_new, size: 18, color: AppColors.primary),
-          //   ),
-          // ),
-          // const SizedBox(width: 12),
+          // KIỂM TRA THÔNG MINH: Chỉ hiện nút Back nếu được push từ trang khác sang
+          if (Navigator.canPop(context)) ...[
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                width: 36, height: 36,
+                decoration: BoxDecoration(color: const Color(0xFFF0F9FF), borderRadius: BorderRadius.circular(18)),
+                child: const Icon(Icons.arrow_back_ios_new, size: 18, color: AppColors.primary),
+              ),
+            ),
+            const SizedBox(width: 12),
+          ],
+
           Expanded(
             child: TextField(
               controller: _textController,
-              autofocus: true,
+              autofocus: Navigator.canPop(context), // Tự động bật bàn phím nếu từ HomePage sang
               textInputAction: TextInputAction.search,
               onChanged: (val) => viewModel.setQuery(val),
               onSubmitted: (val) => viewModel.submitSearch(val),
@@ -100,16 +172,38 @@ class _SearchPageState extends State<SearchPage> {
             ),
           ),
           const SizedBox(width: 12),
+
+          // NÚT MỞ BỘ LỌC TỪ SEARCH PAGE
           Consumer<SearchViewModel>(
               builder: (context, vm, _) {
                 final hasFilters = vm.activeFilter.hasActiveFilters;
-                return Container(
-                  width: 36, height: 36,
-                  decoration: BoxDecoration(
-                    color: hasFilters ? AppColors.primary : const Color(0xFFF0F9FF),
-                    shape: BoxShape.circle,
+                return GestureDetector(
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (context) => const FilterBottomSheet(),
+                    );
+                  },
+                  child: Container(
+                    width: 36, height: 36,
+                    decoration: BoxDecoration(
+                      color: hasFilters ? AppColors.primary : const Color(0xFFF0F9FF),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Icon(Icons.tune, size: 18, color: hasFilters ? Colors.white : AppColors.primary),
+                        if (hasFilters)
+                          Positioned(
+                            top: 8, right: 8,
+                            child: Container(width: 6, height: 6, decoration: const BoxDecoration(color: Colors.red, shape: BoxShape.circle)),
+                          )
+                      ],
+                    ),
                   ),
-                  child: Icon(Icons.tune, size: 18, color: hasFilters ? Colors.white : AppColors.primary),
                 );
               }
           ),
@@ -117,7 +211,6 @@ class _SearchPageState extends State<SearchPage> {
       ),
     );
   }
-
   Widget _buildIdleState(SearchViewModel viewModel) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

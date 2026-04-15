@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../viewmodels/auth/auth_viewmodel.dart';
 import '../../viewmodels/home/restaurant_viewmodel.dart';
+import '../search/filter_bottom_sheet.dart';
+import '../search/search_page.dart';
 import '../shared_widgets/restaurant_card.dart';
 import 'restaurant_detail_page.dart';
 
@@ -133,6 +135,33 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
               const SizedBox(height: 16),
+              // Container(
+              //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              //   decoration: BoxDecoration(
+              //       color: Colors.white,
+              //       borderRadius: BorderRadius.circular(16),
+              //       boxShadow: [
+              //         BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 10)
+              //       ]),
+              //   child: Row(
+              //     children: [
+              //       const Icon(Icons.search, color: Colors.grey, size: 20),
+              //       const SizedBox(width: 12),
+              //       const Expanded(
+              //           child: Text('Tìm quán ăn, món ăn...',
+              //               style: TextStyle(color: Colors.grey, fontSize: 14))),
+              //       Container(
+              //         padding: const EdgeInsets.all(6),
+              //         decoration: BoxDecoration(
+              //             color: AppColors.primary, borderRadius: BorderRadius.circular(10)),
+              //         child: const Icon(Icons.tune, color: Colors.white, size: 16),
+              //       )
+              //     ],
+              //   ),
+              // ),
+              // ... Đoạn mã location_on giữ nguyên phía trên
+
+              // THANH TÌM KIẾM TRÊN HOME PAGE
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
@@ -143,16 +172,37 @@ class _HomePageState extends State<HomePage> {
                     ]),
                 child: Row(
                   children: [
-                    const Icon(Icons.search, color: Colors.grey, size: 20),
-                    const SizedBox(width: 12),
-                    const Expanded(
-                        child: Text('Tìm quán ăn, món ăn...',
-                            style: TextStyle(color: Colors.grey, fontSize: 14))),
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                          color: AppColors.primary, borderRadius: BorderRadius.circular(10)),
-                      child: const Icon(Icons.tune, color: Colors.white, size: 16),
+                    // Bấm vào khu vực chữ/kính lúp -> Nhảy sang SearchPage
+                    Expanded(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque, // Giúp vùng bấm nhạy hơn
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (_) => const SearchPage()));
+                        },
+                        child: Row(
+                          children: const [
+                            Icon(Icons.search, color: Colors.grey, size: 20),
+                            SizedBox(width: 12),
+                            Text('Tìm quán ăn, món ăn...', style: TextStyle(color: Colors.grey, fontSize: 14)),
+                          ],
+                        ),
+                      ),
+                    ),
+                    // Bấm vào nút Tune -> Mở thẳng BottomSheet Filter
+                    GestureDetector(
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => const FilterBottomSheet(),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(10)),
+                        child: const Icon(Icons.tune, color: Colors.white, size: 16),
+                      ),
                     )
                   ],
                 ),
